@@ -145,7 +145,7 @@ rebuildSC();
 var CNT=[7,286,200,176,120,165,206,75,129,109,123,111,43,52,99,128,111,110,98,135,112,78,118,64,77,227,93,88,69,60,34,30,73,54,45,83,182,88,75,85,54,53,89,59,37,35,38,29,18,45,60,49,62,55,78,96,29,22,24,13,14,11,11,18,12,12,30,52,52,44,28,28,20,56,40,31,50,40,46,42,29,19,36,25,22,17,19,26,30,20,15,21,11,8,8,19,5,8,8,11,11,8,3,9,5,4,7,3,6,3,5,4,5,6];
 var BAS="بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ";
 // Audio is verse-by-verse from everyayah.com: https://everyayah.com/data/<folder>/<SSS><AAA>.mp3 (+ bismillah.mp3). v=1: folder confirmed; v=0: probed at first play.
-var REC=[["مشاري العفاسي",["Alafasy_128kbps"],1,"afs"],["عبد الرحمن السديس",["Abdurrahmaan_As-Sudais_192kbps"],1,"sds"],["سعود الشريم",["Saood_ash-Shuraym_128kbps"],0,"shur"],["ماهر المعيقلي",["Maher_AlMuaiqly_64kbps"],1,"maher"],["سعد الغامدي",["Ghamadi_40kbps"],0,"ghamdi"],["ياسر الدوسري",["Yasser_Ad-Dussary_128kbps"],0,"dosari"],["عبد الباسط عبد الصمد",["Abdul_Basit_Murattal_192kbps"],1,"basit"],["محمود خليل الحصري",["Husary_128kbps"],1,"husary"],["محمد صديق المنشاوي",["Minshawy_Murattal_128kbps","Menshawi_32kbps"],0,"minshawi"],["علي الحذيفي",["Hudhaify_128kbps"],0,"hudhaify"],["أحمد العجمي",["Ahmed_ibn_Ali_al-Ajamy_128kbps_ketaballah.net","Ahmed_ibn_Ali_al-Ajamy_64kbps_QuranExplorer.Com"],0,"ajmi"]].map(function(r){return{n:r[0],f:r[1],img:r[3],base:r[2]?"https://everyayah.com/data/"+r[1][0]+"/":""}});
+var REC=[["مشاري العفاسي",["Alafasy_128kbps"],1,"afs"],["عبد الرحمن السديس",["Abdurrahmaan_As-Sudais_192kbps"],1,"sds"],["سعود الشريم",["Saood_ash-Shuraym_128kbps"],0,"shur"],["ماهر المعيقلي",["Maher_AlMuaiqly_64kbps"],1,"maher"],["سعد الغامدي",["Ghamadi_40kbps"],0,"ghamdi"],["ياسر الدوسري",["Yasser_Ad-Dussary_128kbps"],0,"dosari"],["عبد الباسط عبد الصمد",["Abdul_Basit_Murattal_192kbps"],1,"basit"],["محمود خليل الحصري",["Husary_128kbps"],1,"husary"],["محمد صديق المنشاوي",["Minshawy_Murattal_128kbps","Menshawi_32kbps"],0,"minshawi"],["علي الحذيفي",["Hudhaify_128kbps"],0,"hudhaify"],["أحمد العجمي",["Ahmed_ibn_Ali_al-Ajamy_128kbps_ketaballah.net","Ahmed_ibn_Ali_al-Ajamy_64kbps_QuranExplorer.Com"],0,"ajmi"],["عبد الله بصفر",["Abdullah_Basfar_192kbps"],0,"x0"],["محمد أيوب",["Muhammad_Ayyoub_128kbps"],0,"x1"],["محمد جبريل",["Muhammad_Jibreel_128kbps"],0,"x2"],["هاني الرفاعي",["Hani_Rifai_192kbps"],0,"x3"],["ناصر القطامي",["Nasser_Alqatami_128kbps"],0,"x4"],["صلاح البدير",["Salah_Al_Budair_128kbps"],0,"x5"],["عبد الله مطرود",["Abdullah_Matroud_128kbps"],0,"x6"],["أحمد نعينع",["Ahmed_Neana_128kbps"],0,"x7"],["أبو بكر الشاطري",["Abu_Bakr_Ash-Shaatree_128kbps"],0,"x8"],["فارس عباد",["Fares_Abbad_64kbps"],0,"x9"],["محسن القاسم",["Muhsin_Al_Qasim_192kbps"],0,"x10"],["صلاح بوخاطر",["Salaah_AbdulRahman_Bukhatir_128kbps"],0,"x11"],["أيمن سويد",["Ayman_Sowaid_64kbps"],0,"x12"],["ياسر سلامة",["Yaser_Salamah_128kbps"],0,"x13"],["مصطفى إسماعيل",["Mustafa_Ismail_48kbps"],0,"x14"],["علي جابر",["Ali_Jaber_64kbps"],0,"x15"],["محمد الطبلاوي",["Mohammad_al_Tablaway_128kbps"],0,"x16"],["المنشاوي (مجوّد)",["Minshawy_Mujawwad_192kbps"],0,"x17"],["الحصري (مجوّد)",["Husary_Mujawwad_128kbps"],0,"x18"],["عبد الباسط (مجوّد)",["Abdul_Basit_Mujawwad_128kbps"],0,"x19"]].map(function(r){return{n:r[0],f:r[1],img:r[3],base:r[2]?"https://everyayah.com/data/"+r[1][0]+"/":""}});
 try{var EM=JSON.parse(localStorage.getItem("ayat_ea")||"{}");REC.forEach(function(r){if(!r.base&&EM[r.n])r.base=EM[r.n]})}catch(e){}
 
 var NB=REC.length,CR=[];try{CR=JSON.parse(localStorage.getItem("ayat_cr")||"[]")}catch(e){CR=[]}
@@ -157,7 +157,7 @@ var D={rec:0,bg:0,th:0,mode:1,size:1,col:0,dim:1,anim:1,rep:0,surah:1,last:0,las
 var s=Object.assign({},D);try{Object.assign(s,JSON.parse(localStorage.getItem("ayat")||"{}"))}catch(e){}
 function save(){try{localStorage.setItem("ayat",JSON.stringify(s))}catch(e){}}
 var MODES=["آية واحدة","متتالية","إخفاء الآيات"],SIZES=[["صغير",2.6],["متوسط",3.3],["كبير",4.2]],COLS=[["أبيض","#fff"],["رملي","#ecd9a8"],["فيروزي","#7ee8da"]],DIMS=[["خفيف",.15],["متوسط",.3],["قوي",.5]],PR=[["عادية",1],["بطيئة",.85],["أسرع",1.25]],SL=[["إيقاف",0],["٣٠ دقيقة",30],["٦٠ دقيقة",60]],THN=["فحمي ذهبي","زمردي","لازوردي"];
-var LB=[],P=false,AA=[new Audio(),new Audio()],cur=0,Q=[],qi=0,Qn=0,Qr=-1,tok=0,tt,lastBg=-1,ls=0,st,PB;
+var er=0,LB=[],P=false,AA=[new Audio(),new Audio()],cur=0,Q=[],qi=0,Qn=0,Qr=-1,tok=0,tt,lastBg=-1,ls=0,st,PB;
 if(s.rec>=REC.length)s.rec=0;if(s.bg>=SC.length)s.bg=0;
 if(s.last){s.surah=s.last;if(s.lastRec<REC.length)s.rec=s.lastRec}
 function toast(t){var e=$("toast");e.textContent=t;e.classList.add("show");clearTimeout(tt);tt=setTimeout(function(){e.classList.remove("show")},3000)}
@@ -172,10 +172,10 @@ function getText(n,cb){if(TC[n])return cb(TC[n]);var c=null;try{c=JSON.parse(loc
 
 /* ---- Verse-by-verse engine: the shown verse is the verse being recited ---- */
 function probe(u,cb){var a=new Audio(),d=false,t=setTimeout(function(){fin(false)},5000);function fin(ok){if(d)return;d=true;clearTimeout(t);a.onloadedmetadata=a.onerror=null;a.removeAttribute("src");cb(ok)}a.preload="metadata";a.onloadedmetadata=function(){fin(true)};a.onerror=function(){fin(false)};a.src=u}
-function findBase(r,cb){if(r.base)return cb(r.base);var L=r.f.map(function(f){return"https://everyayah.com/data/"+f+"/"}),d=false,left=L.length;L.forEach(function(b){probe(b+"001001.mp3",function(ok){if(d)return;if(ok){d=true;r.base=b;try{var m=JSON.parse(localStorage.getItem("ayat_ea")||"{}");m[r.n]=b;localStorage.setItem("ayat_ea",JSON.stringify(m))}catch(e){}cb(b)}else if(--left==0){d=true;cb("")}})})}
+function findBase(r,cb){if(!r.base&&r.f&&r.f.length){r.fi=0;r.base="https://everyayah.com/data/"+r.f[0]+"/"}cb(r.base||"")}
 function buildQ(n,arr,b){Q=[];if(n!=1&&n!=9)Q.push({t:BAS,u:b+"bismillah.mp3",b:1});for(var i=1;i<=CNT[n-1];i++)Q.push({t:arr&&arr[i-1]?arr[i-1]:"",u:b+("00"+n).slice(-3)+("00"+i).slice(-3)+".mp3",a:i})}
 function pl(a){var pr=a.play();if(pr&&pr.catch)pr.catch(function(err){if(a!==AA[cur]||!a.paused)return;if(err&&err.name=="AbortError")return;if(err&&err.name=="NotAllowedError"){P=false;apply();toast("اضغط زر التشغيل لبدء الصوت");return}toast("تعذّر تشغيل الصوت")})}
-function go(i,reuse){qi=i;s.pos=i;s.dur=Q.length;var a=AA[cur];if(!reuse||!a.getAttribute("src"))a.src=Q[i].u;a.playbackRate=PR[s.pr][1];pl(a);P=true;var nx=Q[i+1];if(nx){var b=AA[1-cur];if(b.getAttribute("src")!=nx.u){b.src=nx.u;b.load()}}save();apply()}
+function go(i,reuse){er=0;qi=i;s.pos=i;s.dur=Q.length;var a=AA[cur];if(!reuse||!a.getAttribute("src"))a.src=Q[i].u;a.playbackRate=PR[s.pr][1];pl(a);P=true;var nx=Q[i+1];if(nx){var b=AA[1-cur];if(b.getAttribute("src")!=nx.u){b.src=nx.u;b.load()}}save();apply()}
 function halt(){P=false;AA.forEach(function(a){a.pause();a.removeAttribute("src");a.load()})}
 function start(sk){var t=++tok;halt();Q=[];Qn=0;sk=Math.floor(sk||0);s.last=s.surah;s.lastRec=s.rec;if(!sk)s.pos=0;save();P=true;apply();var r=REC[s.rec],n=s.surah;
  findBase(r,function(b){if(t!==tok)return;if(!b){P=false;apply();toast("لا يتوفر لهذا القارئ تسجيل آية بآية — جرّب قارئًا آخر");return}
@@ -186,8 +186,13 @@ function nextS(d){s.surah=((s.surah-1+d+114)%114)+1;start();scrollTo2()}
 function scrollTo2(){}
 AA.forEach(function(a){a.preload="auto";
  a.onended=function(){if(a!==AA[cur])return;if(qi<Q.length-1){cur=1-cur;go(qi+1,true)}else if(s.rep)start(0);else nextS(1)};
- a.onerror=function(){if(a!==AA[cur]||!a.getAttribute("src"))return;var it=Q[qi];if(it&&it.b&&qi<Q.length-1){cur=1-cur;go(qi+1)}else{toast("تعذّر تحميل الصوت — تحقق من الاتصال");pauseP()}};
- a.ontimeupdate=function(){if(a!==AA[cur]||!Q.length)return;var d=a.duration,f=d?a.currentTime/d:0;$("pl").style.width=Math.min(100,(qi+f)/Q.length*100)+"%";var n=Date.now();if(n-ls>15000){ls=n;s.pos=qi;save()}}});
+ a.onerror=function(){if(a!==AA[cur]||!a.getAttribute("src"))return;var it=Q[qi],r=REC[Qr];
+  if(r&&r.f&&!r.ok&&(r.fi||0)<r.f.length-1){r.fi=(r.fi||0)+1;r.base="https://everyayah.com/data/"+r.f[r.fi]+"/";start(qi);return}
+  if(it&&it.b&&qi<Q.length-1){cur=1-cur;go(qi+1);return}
+  if(er<3){er++;setTimeout(function(){if(a!==AA[cur]||!P)return;var u=a.getAttribute("src");if(!u)return;a.src=u;a.load();pl(a)},1500);return}
+  if(!r||!r.ok){toast("لا يتوفر لهذا القارئ تسجيل آية بآية — جرّب قارئًا آخر");pauseP();return}
+  if(qi<Q.length-1){cur=1-cur;go(qi+1)}else{toast("تعذّر تحميل الصوت — تحقق من الاتصال");pauseP()}};
+ a.ontimeupdate=function(){if(a!==AA[cur]||!Q.length)return;var rr=REC[Qr];if(rr&&!rr.ok&&a.currentTime>0){rr.ok=1;if(rr.f&&rr.f.length){try{var m=JSON.parse(localStorage.getItem("ayat_ea")||"{}");m[rr.n]=rr.base;localStorage.setItem("ayat_ea",JSON.stringify(m))}catch(e){}}}var d=a.duration,f=d?a.currentTime/d:0;$("pl").style.width=Math.min(100,(qi+f)/Q.length*100)+"%";var n=Date.now();if(n-ls>15000){ls=n;s.pos=qi;save()}}});
 
 var wd={t:-1,n:0};setInterval(function(){if(!P||!Q.length)return;var a=AA[cur];if(a.paused||a.ended){wd.n=0;return}var t=a.currentTime;if(t===wd.t){wd.n++;if(wd.n>=4){wd.n=0;var u=a.getAttribute("src");if(!u)return;a.src=u;a.load();var f=function(){a.removeEventListener("loadedmetadata",f);try{a.currentTime=t}catch(e){}pl(a)};a.addEventListener("loadedmetadata",f)}}else{wd.t=t;wd.n=0}},1500);
 function sleep(){clearTimeout(st);var m=SL[s.sl][1];if(m){st=setTimeout(function(){pauseP();toast("انتهى مؤقّت النوم")},m*60000);toast("سيتوقف التشغيل بعد "+SL[s.sl][0])}}
