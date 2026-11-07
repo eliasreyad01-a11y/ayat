@@ -1,5 +1,5 @@
 
-name: Build Debug APK
+name: Build AYAT APK
 
 on:
   push:
@@ -12,6 +12,11 @@ jobs:
   build:
     name: Build Android APK
     runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    env:
+      ANDROID_HOME: /usr/local/lib/android/sdk
+      ANDROID_SDK_ROOT: /usr/local/lib/android/sdk
 
     steps:
       - name: Checkout repository
@@ -23,38 +28,53 @@ jobs:
           distribution: temurin
           java-version: '17'
 
-      - name: Setup Android SDK
-        uses: android-actions/setup-android@v3
+      - name: Prepare Android SDK
+        run: |
+          export PATH="$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$PATH"
 
-      - name: Setup Gradle
+          echo "ANDROID_HOME=$ANDROID_HOME"
+          ls -la "$ANDROID_HOME/cmdline-tools/latest"
+
+          yes | sdkmanager --licenses || true
+
+          sdkmanager \
+            "platform-tools" \
+            "platforms;android-34" \
+            "build-tools;34.0.0"
+
+      - name: Setup Gradle 8.7
         uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.7'
 
-      - name: Grant execute permission
-        run: chmod +x ./gradlew
+      - name: Verify environment
+        run: |
+          java -version
+          gradle --version
+          echo "Android SDK:"
+          ls "$ANDROID_HOME/platforms"
 
-      - name: Check Gradle
-        run: ./gradlew --version
-
-      - name: Build Debug APK
-        run: ./gradlew assembleDebug --stacktrace
+      - name: Build APK
+        run: gradle --no-daemon --stacktrace assembleDebug
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: MyTVLauncher-APK
+          name: AYAT-APK
           path: app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
           retention-days: 30
 
-      - name: Publish APK Release
+      - name: Publish GitHub Release
+        if: github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          cp app/build/outputs/apk/debug/app-debug.apk MyTVLauncher.apk
+          cp app/build/outputs/apk/debug/app-debug.apk AYAT.apk
 
           gh release delete latest --yes --cleanup-tag || true
 
-          gh release create latest MyTVLauncher.apk \
-            --title "MyTVLauncher Latest APK" \
-            --notes "Debug APK - Commit ${GITHUB_SHA::7}" \
+          gh release create latest AYAT.apk \
+            --title "AYAT Latest APK" \
+            --notes "Build: ${GITHUB_SHA::7}" \
             --target "$GITHUB_SHA"
