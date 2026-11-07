@@ -27,7 +27,7 @@ body.still #bgw{animation:none}
 .brand small{font:700 .8vw Cairo,sans-serif;letter-spacing:.3em;margin-right:.8em;opacity:.85}
 .stagew{position:relative;min-height:0}
 #stage{position:absolute;top:1vh;right:6vw;bottom:3vh;left:6vw;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;text-shadow:0 2px 6px #000}
-.v{font-family:"Amiri Quran",serif;font-size:var(--vs);line-height:1.75;color:var(--vc);animation:in .8s ease-out both}
+.v{font-family:"Amiri Quran",serif;font-size:var(--vs);line-height:1.75;color:var(--vc)}
 .v.dm{font-size:calc(var(--vs)*.48);opacity:.45;animation:none}
 .sub{color:var(--mute);font-size:1.3vw}
 @keyframes in{from{opacity:0}to{opacity:1}}
@@ -39,7 +39,7 @@ body.still #bgw{animation:none}
 .cap p{color:var(--mute);font-size:1.3vw}
 .tmw{justify-self:end;text-align:end;color:var(--sand);font-size:1.3vw}
 .bar{display:flex;justify-content:center;align-items:center}
-button{font:inherit;color:#fff;cursor:pointer;border:0;outline:3px solid transparent;outline-offset:3px;transition:outline-color .15s,background .15s,transform .15s}
+button{font:inherit;color:#fff;cursor:pointer;border:0;outline:3px solid transparent;outline-offset:3px;transition:none}
 button:focus{outline-color:var(--tur)}
 .rb{width:4.6vw;height:4.6vw;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,var(--g1),var(--g2));border:1px solid var(--ln);}
 .rb svg{width:46%;height:46%}
@@ -239,7 +239,7 @@ function openSheet(kind){var b=$("shb"),cols,st0=0,title,cnt="";b.innerHTML="";S
  else if(kind=="s"){title="السور";cols=6;cnt="١١٤ سورة";st0=s.surah-1;for(var k=1;k<=114;k++)(function(k){var e=document.createElement("button");e.className="item si"+(k==s.surah?" on":"");e.innerHTML='<div class="badge"><i>'+k.toLocaleString("ar-EG")+'</i></div><span>'+NM[k-1]+'</span>';e.onclick=function(){s.surah=k;closeSheet();start()};b.appendChild(e);SH.items.push(e)})(k)}
  else{title="الإعدادات";cols=2;SET.forEach(function(x){var e=document.createElement("button");e.className="item";e._l=x[0];e.textContent=x[0]();e.onclick=function(){x[1]();SH.items.forEach(function(y){if(y._l)y.textContent=y._l()})};b.appendChild(e);SH.items.push(e)});SH.items[SH.items.length-1].className="item okb"}
  b.style.gridTemplateColumns="repeat("+cols+",minmax(0,1fr))";$("sht").textContent=title;$("shc").textContent=cnt;SH.cols=cols;SH.open=true;$("sheet").classList.toggle("tall",kind=="s");$("sheet").hidden=false;fs(st0)}
-function fs(i){i=Math.max(0,Math.min(SH.items.length-1,i));SH.i=i;var e=SH.items[i];e.focus({preventScroll:true});e.scrollIntoView({block:"nearest",behavior:"smooth"})}
+function fs(i){i=Math.max(0,Math.min(SH.items.length-1,i));SH.i=i;var e=SH.items[i];e.focus({preventScroll:true});e.scrollIntoView({block:"nearest",behavior:"auto"})}
 function closeSheet(){SH.open=false;$("sheet").hidden=true;fz(1,{r:0,s:1,c:2}[SH.kind])}
 $("kr").onclick=function(){openSheet("r")};$("ks").onclick=function(){openSheet("s")};$("kc").onclick=function(){openSheet("c")};
 

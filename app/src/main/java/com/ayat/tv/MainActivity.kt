@@ -44,6 +44,8 @@ class MainActivity : AppCompatActivity() {
 
         web = WebView(this)
         web.setBackgroundColor(Color.BLACK)
+        web.setLayerType(android.view.View.LAYER_TYPE_HARDWARE, null)
+        web.overScrollMode = android.view.View.OVER_SCROLL_NEVER
         setContentView(web)
         hideSystemBars()
 
@@ -84,6 +86,7 @@ class MainActivity : AppCompatActivity() {
             mediaPlaybackRequiresUserGesture = false
             allowFileAccess = false
             allowContentAccess = true
+            cacheMode = android.webkit.WebSettings.LOAD_DEFAULT
         }
 
         web.loadUrl("https://appassets.androidplatform.net/assets/index.html")
