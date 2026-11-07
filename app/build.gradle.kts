@@ -11,11 +11,23 @@ android {
         applicationId = "com.ayat.tv"
         minSdk = 21
         targetSdk = 34
-        versionCode = 1
+        versionCode = System.getenv("GITHUB_RUN_NUMBER")?.toIntOrNull() ?: 1
         versionName = "1.0"
     }
+    signingConfigs {
+        create("ayat") {
+            storeFile = file("ayat.keystore")
+            storePassword = "ayat123456"
+            keyAlias = "ayat"
+            keyPassword = "ayat123456"
+        }
+    }
     buildTypes {
-        release { isMinifyEnabled = false }
+        debug { signingConfig = signingConfigs.getByName("ayat") }
+        release {
+            isMinifyEnabled = false
+            signingConfig = signingConfigs.getByName("ayat")
+        }
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
