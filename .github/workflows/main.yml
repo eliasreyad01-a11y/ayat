@@ -1,63 +1,32 @@
-name: Build APK
-
+name: Build debug APK
 on:
-  workflow_dispatch:
   push:
-    branches: [main]
-
+  workflow_dispatch:
 permissions:
   contents: write
-
 jobs:
-  apk:
+  build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: "17"
-
-      - uses: subosito/flutter-action@v2
+          java-version: '17'
+      - uses: gradle/actions/setup-gradle@v4
         with:
-          channel: stable
-          cache: true
-
-      - name: Generate Android/iOS folders if missing
-        run: |
-          if [ ! -d android ]; then
-            flutter create --project-name mawoonati --org com.mawoonati --platforms android,ios .
-          fi
-          rm -f test/widget_test.dart
-      - run: flutter pub get
-      - run: dart run flutter_launcher_icons
-
-      # لا توقف البناء عند الفشل كي تظهر النتائج كاملة في السجل
-      - name: Analyze
-        run: flutter analyze
-        continue-on-error: true
-      - name: Test
-        run: flutter test
-        continue-on-error: true
-
-      - name: Build release APK
-        env:
-          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
-        run: >
-          flutter build apk --release
-          --dart-define=SUPABASE_URL=$SUPABASE_URL
-          --dart-define=SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY
+          gradle-version: '8.7'
+      - name: Build
+        run: gradle assembleDebug --stacktrace
       - uses: actions/upload-artifact@v4
         with:
-          name: mawoonati-apk
-          path: build/app/outputs/flutter-apk/app-release.apk
-
-      - name: Publish APK as a release (direct download link)
+          name: app-debug
+          path: app/build/outputs/apk/debug/app-debug.apk
+      - name: Publish APK as a release
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          cp build/app/outputs/flutter-apk/app-release.apk mawoonati.apk
-          gh release delete latest --yes --cleanup-tag || true
-          gh release create latest mawoonati.apk --title "مؤونتي - أحدث نسخة" --notes "أحدث APK" --latest
+          cp app/build/outputs/apk/debug/app-debug.apk MyTVLauncher.apk
+          gh release delete latest -y --cleanup-tag || true
+          gh release create latest MyTVLauncher.apk --title "MyTVLauncher (latest build)" --notes "Debug build of commit ${GITHUB_SHA::7}" --target "$GITHUB_SHA"
+
