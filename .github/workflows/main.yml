@@ -1,32 +1,60 @@
-name: Build debug APK
+
+name: Build Debug APK
+
 on:
   push:
   workflow_dispatch:
+
 permissions:
   contents: write
+
 jobs:
   build:
+    name: Build Android APK
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-java@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Java 17
+        uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: '17'
-      - uses: gradle/actions/setup-gradle@v4
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Grant execute permission
+        run: chmod +x ./gradlew
+
+      - name: Check Gradle
+        run: ./gradlew --version
+
+      - name: Build Debug APK
+        run: ./gradlew assembleDebug --stacktrace
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
         with:
-          gradle-version: '8.7'
-      - name: Build
-        run: gradle assembleDebug --stacktrace
-      - uses: actions/upload-artifact@v4
-        with:
-          name: app-debug
+          name: MyTVLauncher-APK
           path: app/build/outputs/apk/debug/app-debug.apk
-      - name: Publish APK as a release
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Publish APK Release
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           cp app/build/outputs/apk/debug/app-debug.apk MyTVLauncher.apk
-          gh release delete latest -y --cleanup-tag || true
-          gh release create latest MyTVLauncher.apk --title "MyTVLauncher (latest build)" --notes "Debug build of commit ${GITHUB_SHA::7}" --target "$GITHUB_SHA"
 
+          gh release delete latest --yes --cleanup-tag || true
+
+          gh release create latest MyTVLauncher.apk \
+            --title "MyTVLauncher Latest APK" \
+            --notes "Debug APK - Commit ${GITHUB_SHA::7}" \
+            --target "$GITHUB_SHA"
