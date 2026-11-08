@@ -164,7 +164,9 @@ rebuildREC();
 var D={rec:0,bg:0,th:0,mode:1,size:1,col:0,dim:1,anim:1,rep:0,surah:1,last:0,lastRec:0,pos:0,dur:0,sl:0,pr:0};
 var s=Object.assign({},D);try{Object.assign(s,JSON.parse(localStorage.getItem("ayat")||"{}"))}catch(e){}
 if(!s.v3){s.v3=1;s.mode=0;s.rec=0;s.lastRec=0}
-function save(){try{localStorage.setItem("ayat",JSON.stringify(s))}catch(e){}}
+var svT;function flush(){clearTimeout(svT);svT=0;try{localStorage.setItem("ayat",JSON.stringify(s))}catch(e){}}
+function save(){if(!svT)svT=setTimeout(flush,4000)}
+addEventListener("pagehide",flush);document.addEventListener("visibilitychange",function(){if(document.hidden)flush()});
 var MODES=["آية واحدة","متتالية","إخفاء الآيات"],SIZES=[["صغير",2.6],["متوسط",3.3],["كبير",4.2]],COLS=[["أبيض","#fff"],["رملي","#ecd9a8"],["فيروزي","#7ee8da"]],DIMS=[["خفيف",.15],["متوسط",.3],["قوي",.5]],PR=[["عادية",1],["بطيئة",.85],["أسرع",1.25]],SL=[["إيقاف",0],["٣٠ دقيقة",30],["٦٠ دقيقة",60]],THN=["فحمي ذهبي","زمردي","لازوردي"];
 var lw=-1,er=0,LB=[],P=false,AA=[new Audio(),new Audio()],cur=0,Q=[],qi=0,Qn=0,Qr=-1,tok=0,tt,lastBg=-1,ls=0,st,PB;
 if(s.rec>=REC.length)s.rec=0;if(s.bg>=SC.length)s.bg=0;
