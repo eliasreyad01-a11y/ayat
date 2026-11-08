@@ -45,6 +45,7 @@ class MainActivity : AppCompatActivity() {
         web = WebView(this)
         web.setBackgroundColor(Color.BLACK)
         web.overScrollMode = android.view.View.OVER_SCROLL_NEVER
+        web.importantForAccessibility = android.view.View.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS
         setContentView(web)
         hideSystemBars()
 
