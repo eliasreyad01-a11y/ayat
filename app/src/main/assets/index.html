@@ -54,12 +54,12 @@ button:focus{outline-color:var(--tur)}
 .item{flex:0 0 auto;display:flex;align-items:center;padding:.35em .9em .35em 1.1em;border-radius:18px;background:#ffffff14;border:1px solid #ffffff10;font-size:0.92vw;font-weight:700;white-space:nowrap}
 .item:focus{background:var(--lapis)}
 .item.on{background:#ffffff26;box-shadow:inset 0 -3px 0 var(--sand)}
-.mini{position:relative;width:2.5em;height:2.5em;flex:none;border-radius:50%;overflow:hidden;border:2px solid var(--sand);display:grid;place-items:center;background:linear-gradient(165deg,#ffffff22,#00000040)}
-.ph{position:absolute;top:0;right:0;bottom:0;left:0;background:center/cover;display:grid;place-items:center}
+.mini{position:relative;width:2.5em;height:2.5em;flex:none;border-radius:50%;border:2px solid var(--sand);display:grid;place-items:center;background:linear-gradient(165deg,#ffffff22,#00000040)}
+.ph{border-radius:50%;position:absolute;top:0;right:0;bottom:0;left:0;background:center/cover;display:grid;place-items:center}
 .ph i{font:normal 700 1.4em "Amiri Quran",serif;color:var(--sand)}.ph.has i{display:none}
 .badge{position:relative;width:1.9em;height:1.9em;flex:none;display:grid;place-items:center;color:var(--sand);font:700 .8em "Amiri Quran",serif}
-.badge::before,.badge::after{content:"";position:absolute;top:12%;right:12%;bottom:12%;left:12%;border:1.5px solid var(--sand);opacity:.8}
-.badge::after{transform:rotate(45deg)}.badge i{position:relative;font-style:normal}
+.badge::before{content:"";position:absolute;top:6%;right:6%;bottom:6%;left:6%;border:1.5px solid var(--sand);border-radius:50%;opacity:.8}
+.badge i{position:relative;font-style:normal}
 .chip{flex:0 0 auto;font-weight:600;font-size:0.84vw;padding:.45em 1em;border-radius:14px;background:#ffffff1a;border:1px solid #ffffff12;white-space:nowrap}
 .chip:focus{background:var(--lapis)}
 #toast{position:fixed;left:0;right:0;bottom:4vh;margin:auto;width:max-content;max-width:84vw;background:var(--sand);color:#241c05;font-weight:700;padding:.7em 1.5em;border-radius:14px;font-size:1.12vw;opacity:0;transform:translateY(12px);transition:opacity .25s,transform .25s;pointer-events:none;z-index:9}
@@ -157,11 +157,12 @@ var D={rec:0,bg:0,th:0,mode:1,size:1,col:0,dim:1,anim:1,rep:0,surah:1,last:0,las
 var s=Object.assign({},D);try{Object.assign(s,JSON.parse(localStorage.getItem("ayat")||"{}"))}catch(e){}
 function save(){try{localStorage.setItem("ayat",JSON.stringify(s))}catch(e){}}
 var MODES=["آية واحدة","متتالية","إخفاء الآيات"],SIZES=[["صغير",2.6],["متوسط",3.3],["كبير",4.2]],COLS=[["أبيض","#fff"],["رملي","#ecd9a8"],["فيروزي","#7ee8da"]],DIMS=[["خفيف",.15],["متوسط",.3],["قوي",.5]],PR=[["عادية",1],["بطيئة",.85],["أسرع",1.25]],SL=[["إيقاف",0],["٣٠ دقيقة",30],["٦٠ دقيقة",60]],THN=["فحمي ذهبي","زمردي","لازوردي"];
-var er=0,LB=[],P=false,AA=[new Audio(),new Audio()],cur=0,Q=[],qi=0,Qn=0,Qr=-1,tok=0,tt,lastBg=-1,ls=0,st,PB;
+var lw=-1,er=0,LB=[],P=false,AA=[new Audio(),new Audio()],cur=0,Q=[],qi=0,Qn=0,Qr=-1,tok=0,tt,lastBg=-1,ls=0,st,PB;
 if(s.rec>=REC.length)s.rec=0;if(s.bg>=SC.length)s.bg=0;
 if(s.last){s.surah=s.last;if(s.lastRec<REC.length)s.rec=s.lastRec}
 function toast(t){var e=$("toast");e.textContent=t;e.classList.add("show");clearTimeout(tt);tt=setTimeout(function(){e.classList.remove("show")},3000)}
-function imgs(root){root.querySelectorAll(".ph[data-k]:not(.has)").forEach(function(p){var im=new Image();im.onload=function(){p.style.backgroundImage="url("+im.src+")";p.classList.add("has")};im.src="img/reciters/"+p.dataset.k+".jpg"})}
+var IMGOK={};
+function imgs(root){root.querySelectorAll(".ph[data-k]:not(.has)").forEach(function(p){if(!IMGOK[p.dataset.k])return;var im=new Image();im.onload=function(){p.style.backgroundImage="url("+im.src+")";p.classList.add("has")};im.src="img/reciters/"+p.dataset.k+".jpg"})}
 
 /* ---- Text: verified Uthmani text from the AlQuran Cloud API (Tanzil-based), cached locally ---- */
 function n2(x){return(x||"").replace(/[\u064B-\u0652\u0640\u0670]/g,"").replace(/[\u0671أإآ]/g,"ا").replace(/ة/g,"ه").replace(/ى/g,"ي")}
@@ -192,7 +193,7 @@ AA.forEach(function(a){a.preload="auto";
   if(er<3){er++;setTimeout(function(){if(a!==AA[cur]||!P)return;var u=a.getAttribute("src");if(!u)return;a.src=u;a.load();pl(a)},1500);return}
   if(!r||!r.ok){toast("لا يتوفر لهذا القارئ تسجيل آية بآية — جرّب قارئًا آخر");pauseP();return}
   if(qi<Q.length-1){cur=1-cur;go(qi+1)}else{toast("تعذّر تحميل الصوت — تحقق من الاتصال");pauseP()}};
- a.ontimeupdate=function(){if(a!==AA[cur]||!Q.length)return;var rr=REC[Qr];if(rr&&!rr.ok&&a.currentTime>0){rr.ok=1;if(rr.f&&rr.f.length){try{var m=JSON.parse(localStorage.getItem("ayat_ea")||"{}");m[rr.n]=rr.base;localStorage.setItem("ayat_ea",JSON.stringify(m))}catch(e){}}}var d=a.duration,f=d?a.currentTime/d:0;$("pl").style.width=Math.min(100,(qi+f)/Q.length*100)+"%";var n=Date.now();if(n-ls>15000){ls=n;s.pos=qi;save()}}});
+ a.ontimeupdate=function(){if(a!==AA[cur]||!Q.length)return;var rr=REC[Qr];if(rr&&!rr.ok&&a.currentTime>0){rr.ok=1;if(rr.f&&rr.f.length){try{var m=JSON.parse(localStorage.getItem("ayat_ea")||"{}");m[rr.n]=rr.base;localStorage.setItem("ayat_ea",JSON.stringify(m))}catch(e){}}}var d=a.duration,f=d?a.currentTime/d:0;if(!SH.open&&!document.body.classList.contains("idle")){var w=Math.round((qi+f)/Q.length*1000)/10;if(w!==lw){lw=w;$("pl").style.width=Math.min(100,w)+"%"}}var n=Date.now();if(n-ls>15000){ls=n;s.pos=qi;save()}}});
 
 var wd={t:-1,n:0};setInterval(function(){if(!P||!Q.length)return;var a=AA[cur];if(a.paused||a.ended){wd.n=0;return}var t=a.currentTime;if(t===wd.t){wd.n++;if(wd.n>=4){wd.n=0;var u=a.getAttribute("src");if(!u)return;a.src=u;a.load();var f=function(){a.removeEventListener("loadedmetadata",f);try{a.currentTime=t}catch(e){}pl(a)};a.addEventListener("loadedmetadata",f)}}else{wd.t=t;wd.n=0}},1500);
 function sleep(){clearTimeout(st);var m=SL[s.sl][1];if(m){st=setTimeout(function(){pauseP();toast("انتهى مؤقّت النوم")},m*60000);toast("سيتوقف التشغيل بعد "+SL[s.sl][0])}}
