@@ -109,7 +109,7 @@ body.idle .top,body.idle #plt,body.idle .np2,body.idle .dock2{visibility:hidden}
 <body>
 <div id="bgw"></div><div id="shade"></div><div id="vig"></div>
 <div class="app">
-  <header class="top"><div class="brand">آيات<small>AYAT</small></div></header>
+  <header class="top"><div class="brand">آيات</div></header>
   <div class="stagew"><div id="stage"></div><div id="note"></div></div>
   <div id="plt"><div id="pl"></div></div>
   <div class="np2"><div class="cap"><h1 id="np"></h1><p id="nr"></p></div><div class="bar" id="ctl"></div><div class="tmw"><div id="tm"></div><div id="vi"></div></div></div>
@@ -170,13 +170,13 @@ function probe(u,cb){var a=new Audio(),d=false,t=setTimeout(function(){fin(false
 function findBase(r,cb){if(r.w)return cb(r.w);if(!r.base&&r.f&&r.f.length){r.fi=0;r.base="https://everyayah.com/data/"+r.f[0]+"/"}cb(r.base||"")}
 function buildQ(n,arr,b){if(REC[s.rec].w){Q=[{t:"سورة "+NM[n-1],u:b+("00"+n).slice(-3)+".mp3",w:1}];return}Q=[];if(n!=1&&n!=9)Q.push({t:BAS,u:b+"bismillah.mp3",b:1});for(var i=1;i<=CNT[n-1];i++)Q.push({t:arr&&arr[i-1]?arr[i-1]:"",u:b+("00"+n).slice(-3)+("00"+i).slice(-3)+".mp3",a:i})}
 function pl(a){var pr=a.play();if(pr&&pr.catch)pr.catch(function(err){if(a!==AA[cur]||!a.paused)return;if(err&&err.name=="AbortError")return;if(err&&err.name=="NotAllowedError"){P=false;apply();toast("اضغط زر التشغيل لبدء الصوت");return}toast("تعذّر تشغيل الصوت")})}
-var BC={},BO=[],NOC=0;
+var BC={},BO=[],NOC=0,NOE=0;
 function pf(u){if(NOC||BC[u]!==undefined)return;BC[u]=0;var x=new XMLHttpRequest();x.open("GET",u);x.responseType="blob";
- x.onload=function(){if(x.status!==200){delete BC[u];return}BC[u]=URL.createObjectURL(x.response);BO.push(u);while(BO.length>10){var o=BO.shift();try{URL.revokeObjectURL(BC[o])}catch(e){}delete BC[o]}
+ x.onload=function(){if(x.status!==200){delete BC[u];return}NOE=0;BC[u]=URL.createObjectURL(x.response);BO.push(u);while(BO.length>10){var o=BO.shift();try{URL.revokeObjectURL(BC[o])}catch(e){}delete BC[o]}
   var b=AA[1-cur];if(b._u===u&&b.paused&&b!==AA[cur]&&b.getAttribute("src")===u){b.src=BC[u];b.load()}};
- x.onerror=function(){NOC=1;delete BC[u]};x.send()}
+ x.onerror=function(){if(++NOE>=4)NOC=1;delete BC[u]};x.send()}
 function pre(j,only){var q=Q[j];if(!q||q.w)return;var u=q.u;if(!only){var b=AA[1-cur];if(b._u!==u){b.src=BC[u]||u;b._u=u;b.load()}}pf(u)}
-function go(i,reuse){er=0;qi=i;s.pos=i;s.dur=Q.length;var a=AA[cur],u=Q[i].u;if(!reuse||a._u!==u){a.src=BC[u]||u;a._u=u}a.playbackRate=PR[s.pr][1];pl(a);P=true;pre(i+1);pre(i+2,1);save();apply()}
+function go(i,reuse){er=0;qi=i;s.pos=i;s.dur=Q.length;var a=AA[cur],u=Q[i].u;if(!reuse||a._u!==u){a.src=BC[u]||u;a._u=u}a.playbackRate=PR[s.pr][1];pl(a);P=true;pre(i+1);pre(i+2,1);pre(i+3,1);save();apply()}
 function halt(){P=false;AA.forEach(function(a){a.pause();a._u="";a.removeAttribute("src");a.load()})}
 function start(sk){var t=++tok;halt();Q=[];Qn=0;sk=Math.floor(sk||0);s.last=s.surah;s.lastRec=s.rec;if(!sk)s.pos=0;save();P=true;apply();var r=REC[s.rec],n=s.surah;
  findBase(r,function(b){if(t!==tok)return;if(!b){P=false;apply();toast("لا يتوفر لهذا القارئ تسجيل آية بآية — جرّب قارئًا آخر");return}

@@ -19,6 +19,9 @@ import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.webkit.WebViewAssetLoader
+import java.io.ByteArrayInputStream
+import java.net.HttpURLConnection
+import java.net.URL
 
 /**
  * Hosts the AYAT web app (assets/index.html) in a WebView.
@@ -56,6 +59,26 @@ class MainActivity : AppCompatActivity() {
         web.webViewClient = object : WebViewClient() {
             override fun shouldInterceptRequest(view: WebView?, request: WebResourceRequest?): WebResourceResponse? {
                 val uri = request?.url ?: return null
+                val host = uri.host ?: ""
+                // Page-initiated XHR (has an Origin header) to the audio hosts: fetch natively and add CORS,
+                // so the page can prefetch the next verses into memory for gapless playback.
+                if ((host.endsWith("everyayah.com") || host.endsWith("mp3quran.net")) &&
+                    request.requestHeaders.containsKey("Origin")) {
+                    val cors = mapOf("Access-Control-Allow-Origin" to "*")
+                    return try {
+                        val c = URL(uri.toString()).openConnection() as HttpURLConnection
+                        c.connectTimeout = 10000
+                        c.readTimeout = 20000
+                        val code = c.responseCode
+                        if (code == 200) {
+                            WebResourceResponse(c.contentType ?: "audio/mpeg", null, 200, "OK", cors, c.inputStream)
+                        } else {
+                            WebResourceResponse("text/plain", "utf-8", code, "Error", cors, ByteArrayInputStream(ByteArray(0)))
+                        }
+                    } catch (e: Exception) {
+                        WebResourceResponse("text/plain", "utf-8", 504, "Gateway Timeout", cors, ByteArrayInputStream(ByteArray(0)))
+                    }
+                }
                 return loader.shouldInterceptRequest(uri)
             }
         }
