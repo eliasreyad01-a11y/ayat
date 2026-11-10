@@ -176,14 +176,48 @@ function pf(u){if(NOC||BC[u]!==undefined)return;BC[u]=0;var x=new XMLHttpRequest
   var b=AA[1-cur];if(b._u===u&&b.paused&&b!==AA[cur]&&b.getAttribute("src")===u){b.src=BC[u];b.load()}};
  x.onerror=function(){if(++NOE>=4)NOC=1;delete BC[u]};x.send()}
 function pre(j,only){var q=Q[j];if(!q||q.w)return;var u=q.u;if(!only){var b=AA[1-cur];if(b._u!==u){b.src=BC[u]||u;b._u=u;b.load()}}pf(u)}
-function go(i,reuse){er=0;qi=i;s.pos=i;s.dur=Q.length;var a=AA[cur],u=Q[i].u;if(!reuse||a._u!==u){a.src=BC[u]||u;a._u=u}a.playbackRate=PR[s.pr][1];pl(a);P=true;pre(i+1);pre(i+2,1);pre(i+3,1);save();apply()}
-function halt(){P=false;AA.forEach(function(a){a.pause();a._u="";a.removeAttribute("src");a.load()})}
-function start(sk){var t=++tok;halt();Q=[];Qn=0;sk=Math.floor(sk||0);s.last=s.surah;s.lastRec=s.rec;if(!sk)s.pos=0;save();P=true;apply();var r=REC[s.rec],n=s.surah;
+/* ---- Gapless engine (Web Audio): verses are decoded and scheduled back-to-back ---- */
+var WAhard=0,AC=null,WAoff=!(window.AudioContext||window.webkitAudioContext),WM=0,WB={},WO=[],WL={},WF={},WNE=0,WDE=0,WSrc={},WSt={},WEn={},wsch=-1,wend=0,wtok=0;
+function wac(){if(!AC){try{AC=new(window.AudioContext||window.webkitAudioContext)()}catch(e){WAoff=1;return null}}return AC}
+function wload(u,cb){if(WB[u])return cb(WB[u]);if(WL[u]){WL[u].push(cb);return}WL[u]=[cb];var ac=wac();if(!ac){delete WL[u];return cb(null)}
+ var x=new XMLHttpRequest();x.open("GET",u);x.responseType="arraybuffer";x.timeout=25000;
+ function done(buf){var l=WL[u];delete WL[u];if(buf){WB[u]=buf;WO.push(u);while(WO.length>8)delete WB[WO.shift()]}if(l)l.forEach(function(f){f(buf)})}
+ x.onload=function(){if(x.status!==200)return done(null);WNE=0;try{ac.decodeAudioData(x.response,function(b){WDE=0;done(b)},function(){if(++WDE>=3)WAoff=WAhard=1;done(null)})}catch(e){if(++WDE>=3)WAoff=WAhard=1;done(null)}};
+ x.onerror=x.ontimeout=function(){if(++WNE>=4)WAoff=1;done(null)};x.send()}
+var WNx={};
+function wneed(j){var q=Q[j];if(!q||q.w||q.skip||WB[q.u]||WL[q.u]||WNx[q.u]>Date.now())return;var tk=wtok;
+ wload(q.u,function(b){if(b){wfill();return}if(WAoff){wfallback();return}if(tk!==wtok||j<qi)return;var n=WF[q.u]=(WF[q.u]||0)+1;WNx[q.u]=Date.now()+1500;if(n>3){if(j<=qi+1)wfail(j);else WF[q.u]=2}})}
+function wfallback(){if(!WM)return;var i=qi;WM=0;wstop();go(i)}
+function wfail(j){var r=REC[Qr],q=Q[j];
+ if(r&&r.f&&!r.ok&&(r.fi||0)<r.f.length-1){r.fi=(r.fi||0)+1;r.base="https://everyayah.com/data/"+r.f[r.fi]+"/";WF={};start(qi);return}
+ if(q.b){q.skip=1;wfill();return}
+ if(!r||!r.ok){toast("لا يتوفر لهذا القارئ تسجيل آية بآية — جرّب قارئًا آخر");pauseP();return}
+ q.skip=1;wfill()}
+function wfill(){if(!WM||!AC)return;var ac=AC,rate=PR[s.pr][1];
+ while(wsch+1<Q.length&&wsch+1<=qi+2){var j=wsch+1,q=Q[j],buf=WB[q.u],when=wsch<0?ac.currentTime+0.04:Math.max(wend,ac.currentTime+0.01);
+  if(q.skip){WSt[j]=when;WEn[j]=when;wsch=j;wend=when;continue}
+  if(!buf)break;
+  var src=ac.createBufferSource();src.buffer=buf;src.playbackRate.value=rate;src.connect(ac.destination);src.start(when);
+  WSrc[j]=src;WSt[j]=when;wend=when+buf.duration/rate;WEn[j]=wend;wsch=j}
+ for(var k=qi;k<=qi+3&&k<Q.length;k++)wneed(k)}
+function wstop(){for(var k in WSrc){var x=WSrc[k];try{x.stop(0)}catch(e){}try{x.disconnect()}catch(e){}}WSrc={};WSt={};WEn={};wsch=-1;wend=0}
+function wgo(i){++wtok;wstop();var ac=wac();if(!ac){WM=0;return go(i)}WM=1;er=0;qi=i;s.pos=i;s.dur=Q.length;P=true;wsch=i-1;wend=0;if(ac.state==="suspended")ac.resume();wneed(i);wfill();save();apply()}
+setInterval(function(){if(!WM||!P||!AC||!Q.length)return;var t=AC.currentTime,adv=0;
+ while(WSt[qi+1]!==undefined&&t>=WSt[qi+1]){delete WSrc[qi-1];qi++;er=0;s.pos=qi;adv=1}
+ var st=WSt[qi],en=WEn[qi];
+ if(st!==undefined&&t>=st){var rr=REC[Qr];if(rr&&!rr.ok){rr.ok=1;if(rr.f&&rr.f.length){try{var m=JSON.parse(localStorage.getItem("ayat_ea")||"{}");m[rr.n]=rr.base;localStorage.setItem("ayat_ea",JSON.stringify(m))}catch(e){}}}}
+ if(adv){save();apply()}
+ else if(st!==undefined&&en>st&&!SH.open&&!document.body.classList.contains("idle")){var f=Math.min(1,Math.max(0,(t-st)/(en-st))),w=Math.round((qi+f)/Q.length*1000)/10;if(w!==lw){lw=w;$("pl").style.width=Math.min(100,w)+"%"}}
+ if(wsch===Q.length-1&&qi===wsch&&WEn[qi]!==undefined&&t>=WEn[qi]){WM=0;wstop();if(s.rep)start(0);else nextS(1);return}
+ wfill()},200);
+function go(i,reuse){if(!WAoff&&Q[i]&&!Q[i].w){wgo(i);return}er=0;qi=i;s.pos=i;s.dur=Q.length;var a=AA[cur],u=Q[i].u;if(!reuse||a._u!==u){a.src=BC[u]||u;a._u=u}a.playbackRate=PR[s.pr][1];pl(a);P=true;pre(i+1);pre(i+2,1);pre(i+3,1);save();apply()}
+function halt(){P=false;++wtok;WM=0;wstop();AA.forEach(function(a){a.pause();a._u="";a.removeAttribute("src");a.load()})}
+function start(sk){var t=++tok;if(!WAhard)WAoff=!(window.AudioContext||window.webkitAudioContext);WNE=0;WDE=0;halt();Q=[];Qn=0;sk=Math.floor(sk||0);s.last=s.surah;s.lastRec=s.rec;if(!sk)s.pos=0;save();P=true;apply();var r=REC[s.rec],n=s.surah;
  findBase(r,function(b){if(t!==tok)return;if(!b){P=false;apply();toast("لا يتوفر لهذا القارئ تسجيل آية بآية — جرّب قارئًا آخر");return}
   buildQ(n,TC[n]||null,b);Qn=n;Qr=s.rec;cur=0;go(Math.max(0,Math.min(sk,Q.length-1)));getText(n,function(arr){if(t!==tok||!arr)return;if(REC[s.rec].w)setWT(arr,n);else Q.forEach(function(it){if(it.a)it.t=arr[it.a-1]||""});stage()})})}
 function setWT(arr,n){WT=arr;var c=[],t=(n==1||n==9)?0:40;arr.forEach(function(x){t+=x.length+6;c.push(t)});WTc=c}
-function pauseP(){P=false;AA[cur].pause();apply()}
-function toggle(){if(P){pauseP();return}if(Q.length&&Qn==s.surah&&Qr==s.rec){P=true;pl(AA[cur]);apply();return}start(s.last==s.surah&&s.lastRec==s.rec?s.pos:0)}
+function pauseP(){P=false;if(WM&&AC)AC.suspend();else AA[cur].pause();apply()}
+function toggle(){if(P){pauseP();return}if(Q.length&&Qn==s.surah&&Qr==s.rec){P=true;if(WM&&AC)AC.resume();else pl(AA[cur]);apply();return}start(s.last==s.surah&&s.lastRec==s.rec?s.pos:0)}
 function nextS(d){s.surah=((s.surah-1+d+114)%114)+1;start();scrollTo2()}
 function scrollTo2(){}
 AA.forEach(function(a){a.preload="auto";
